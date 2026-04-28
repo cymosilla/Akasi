@@ -1,0 +1,6 @@
+__pycache__/
+compressed/
+data/
+docs/
+compressed.zip
+example_app.py
