@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 
 # ROOT = Path(r"C:\Users\cymos\Akasi\data\sample\cgmacros-scientific-dataset-nutrition-diet-monitoring-1.0.0\CGMacros_dateshifted365\CGMacros")
+# I am used to working on my university's OpenLab that I memorized how file directories are stored via Linux. 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 ROOT = (
     PROJECT_ROOT
@@ -13,6 +14,7 @@ ROOT = (
     / "CGMacros"
 )
 BIO_PATH = ROOT / "bio.csv"
+PREPROCESS_PATH = PROJECT_ROOT / "data" / "preprocessed"
 
 PARTICIPANTS = [2,5,6,8,10,12,14,15,16,23,26,29,31,33,35,38,39,42,43,45,46]
 AGE_LO, AGE_HI = 35, 55
@@ -20,8 +22,9 @@ AGE_LO, AGE_HI = 35, 55
 def to_numeric(s):
     return pd.to_numeric(s, errors="coerce")
 
+# May not need
 def time_in_range(g, lo=70, hi=180):
-    g = g.dropna()
+    g = g.dropna() # Remove null values
     if len(g) == 0:
         return np.nan
     return ((g >= lo) & (g <= hi)).mean()
@@ -72,10 +75,10 @@ def main():
 
     feature_rows = []
 
-    for _, row in bio.iterrows():
+    for _, row in bio.iterrows(): # Literally iterate through rows
         sid = int(row["subject_id"])
 
-        # Kept deleting folders by accident
+        # ERROR: Folder not found circument
         if sid not in folder_id_map:
             print(f"No folder for subject {sid}")
             continue
@@ -113,7 +116,7 @@ def main():
         feature_rows.append(feats)
 
     feat_df = pd.DataFrame(feature_rows)
-    out = ROOT / "processed_subject_timeseries_features.csv"
+    out = PREPROCESS_PATH / "cgmacros-time-series-res.csv"
     feat_df.to_csv(out, index=False)
     print(f"Saved: {out}  shape={feat_df.shape}")
 

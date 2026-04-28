@@ -2,17 +2,25 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
+from ui.cgmacros import (
+    render_time_series_section,
+    render_feature_summary_section,
+    render_correlations_section
+)
 '''
     This is for the Streamlit visual app for users to be able to interact with the data. 
     List of variables:
         Bone Density
         Orientation
         Radiation
-        
+
 '''
-st.title("Akasi Dashboard")
-st.write("Adjust the sliders below to see how gravity affects biological systems.")
 
+st.set_page_config(page_title="Akasi Dashboard", layout="wide")
+st.title("CGMacros: Time Series + Metabolic Associations")
 
-# Syntax: st.sidebar.slider("Label", min_value, max_value, default_value)
-gravity_level = st.sidebar.slider("Bone Density over time", 0.0, 1.0, 0.1)
+render_time_series_section()
+st.divider()
+render_feature_summary_section()
+st.divider()
+render_correlations_section()
