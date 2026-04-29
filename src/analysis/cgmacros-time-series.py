@@ -16,7 +16,8 @@ ROOT = (
 BIO_PATH = ROOT / "bio.csv"
 PREPROCESS_PATH = PROJECT_ROOT / "data" / "preprocessed"
 
-PARTICIPANTS = [2,5,6,8,10,12,14,15,16,23,26,29,31,33,35,38,39,42,43,45,46]
+PARTICIPANTS = list(range(1, 46)) # All participants
+# PARTICIPANTS = [2,5,6,8,10,12,14,15,16,23,26,29,31,33,35,38,39,42,43,45,46] #Match age range of 35-55
 AGE_LO, AGE_HI = 35, 55
 
 def to_numeric(s):
@@ -29,7 +30,7 @@ def time_in_range(g, lo=70, hi=180):
         return np.nan
     return ((g >= lo) & (g <= hi)).mean()
 
-def build_features_for_timeseries(ts: pd.DataFrame, prefix: str):
+def build_features_for_timeseries(ts, prefix):
     g = to_numeric(ts[f"{prefix} GL"])
     return {
         f"{prefix}_mean": g.mean(),
@@ -46,10 +47,8 @@ def build_features_for_timeseries(ts: pd.DataFrame, prefix: str):
 def main():
     bio = pd.read_csv(BIO_PATH)
 
-    # If X subject exists --> Do age
+    # Keep lowercase naming convention
     bio = bio.rename(columns={
-        "subject": "subject_id",
-        "Age": "Age",
         "Gender": "gender"
     })
 
@@ -58,7 +57,7 @@ def main():
     # cohort filter [ages 35-50]
     # Already added age
     bio = bio[(bio["Age__num"] >= AGE_LO) & (bio["Age__num"] <= AGE_HI)].copy()
-    bio = bio[bio["subject_id"].isin(PARTICIPANTS)].copy()
+    bio = bio[bio["subject"].isin(PARTICIPANTS)].copy()
 
     # Build map of data based on consistent file naming
     folder_id_map = {}
@@ -76,7 +75,7 @@ def main():
     feature_rows = []
 
     for _, row in bio.iterrows(): # Literally iterate through rows
-        sid = int(row["subject_id"])
+        sid = int(row["subject"])
 
         # ERROR: Folder not found circument
         if sid not in folder_id_map:
@@ -109,7 +108,7 @@ def main():
         if "Dexcom GL" in ts.columns:
             feats.update(build_features_for_timeseries(ts, "Dexcom"))
 
-        feats["subject_id"] = sid
+        feats["subject"] = sid
         feats["age"] = float(row["Age__num"])
         feats["gender"] = row["gender"]
 
