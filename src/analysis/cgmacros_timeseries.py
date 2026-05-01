@@ -14,7 +14,7 @@ ROOT = (
     / "CGMacros"
 )
 BIO_PATH = ROOT / "bio.csv"
-PREPROCESS_PATH = PROJECT_ROOT / "data" / "preprocessed"
+PREPROCESS_PATH = PROJECT_ROOT / "data" / "analyzed"
 
 PARTICIPANTS = list(range(1, 46)) # All participants
 # PARTICIPANTS = [2,5,6,8,10,12,14,15,16,23,26,29,31,33,35,38,39,42,43,45,46] #Match age range of 35-55
@@ -30,7 +30,7 @@ def time_in_range(g, lo=70, hi=180):
         return np.nan
     return ((g >= lo) & (g <= hi)).mean()
 
-def build_features_for_timeseries(ts, prefix):
+def timeseries(ts, prefix):
     g = to_numeric(ts[f"{prefix} GL"])
     return {
         f"{prefix}_mean": g.mean(),
@@ -104,9 +104,9 @@ def main():
 
         # Data was separated by Libre vs Dexcom sensors
         if "Libre GL" in ts.columns:
-            feats.update(build_features_for_timeseries(ts, "Libre"))
+            feats.update(timeseries(ts, "Libre"))
         if "Dexcom GL" in ts.columns:
-            feats.update(build_features_for_timeseries(ts, "Dexcom"))
+            feats.update(timeseries(ts, "Dexcom"))
 
         feats["subject"] = sid
         feats["age"] = float(row["Age__num"])
