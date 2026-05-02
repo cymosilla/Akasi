@@ -23,5 +23,4 @@ def get_bio_data():
             bio["Collection time PDL (Lab)"],
             errors="coerce"
         )
-
     return bio

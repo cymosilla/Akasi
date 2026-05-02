@@ -13,6 +13,11 @@ Streamlit
 For installing them, I utilized Anaconda, created a new conda environment "Akasi", and ran the commands in the next section from there. 
 
 ## Instructions for App
+
+TODO: Add a script for user to run all analyses
+TODO: Add a script for downloading files
+TODO: Update .gitignore to include only data/sample folder
+
 1. Clone this repo.
 2. Extract Akasi/data/compressed. # XXX: See if this needs to be added or erased before submission.
 3. In the command-line terminal, type or paste in the following two lines:
@@ -50,5 +55,10 @@ src - Source code
 
 XXX: Users are expected to download the databases from the original sources. Multiple databases with similar parameters have been utilized. If certain databases cannot be found, this will not obstruct the program from running. However, at least one database per subcategory under the previous heading "Databases included" should be downloaded.
 
+## Methods
+This is explained more in Component 1 of my submission, but for a brief summary, this project aims to combine preexisting models and analyses methods with unknown variances of data. This is done through time series and Baynesian modeling. 
+
 ## Akasi Origin
 Akasi is the name of the god of health and sickness in Sambal tradition. Heavily revered alongside the central Malyari, he was both feared and revered for his magnificent powers. Sambal refers to the linguistic group from the Zambales province of the Philippines.
+
+Not much is known about him; only a few websites and a book from 1969 were written with him being mentioned alongside the more prominent Malyari. I chose this name because there are a lot of unknowns even with the advances of modern-day medicine; it's like exploring the dark side of the Moon. In typical NASA fashion, I also tried creating an acronym out of it, but settled on keeping the namesake for representation.
