@@ -25,6 +25,7 @@ Question to answer: Sleep efficiency, what's eaffected by it?
 from pathlib import Path
 
 import pandas as pd
+import seaborn as sns # GLMM https://github.com/junpenglao/GLMM-in-Python/blob/master/Playground.py 
 import statsmodels.formula.api as smf # Extension to scipy
 # Documentation: https://www.statsmodels.org/stable/example_formulas.html
 
@@ -109,11 +110,7 @@ def clean_data(df):
 
 def fit_sleep_efficiency_model(df):
     model_df = df.dropna(
-        subset=[
-            "sleep_efficiency",
-            "BR_Day",
-            "Subject",
-        ]
+        subset=["sleep_efficiency", "BR_Day", "Subject",]
     )
     model = smf.mixedlm(
         formula=(
@@ -150,12 +147,8 @@ def main():
     coef_table.index.name = "term"
     output_file = (ANALYSIS_DIR / "ares-actigraphy-mixedeffects.csv" )
     coef_table.to_csv(output_file)
-    print(
-        f"Saved model results to:\n{output_file}"
-    )
 
-    print("\n")
-    print(results.summary())
+    # print("/n" + results.summary())
 
 if __name__ == "__main__":
     main()

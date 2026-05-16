@@ -1,16 +1,12 @@
 from pathlib import Path
 import pandas as pd
+import plotly.express as px # New interactive chart, see how it goes
+# import plotly.graph_objects as go # No go
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
 from src.analysis.cgmacros_scatter_plot import get_bio_data
-
-# from ui.cgmacros import (
-#     render_time_series_section,
-#     render_feature_summary_section,
-#     render_correlations_section
-# )
 '''
     This is for the Streamlit visual app for users to be able to interact with the data. 
     List of variables:
@@ -19,7 +15,6 @@ from src.analysis.cgmacros_scatter_plot import get_bio_data
         Radiation
 
 '''
-
 st.set_page_config(page_title="Akasi Dashboard", layout="wide")
 st.title("Akasi Dashboard")
 
@@ -85,10 +80,7 @@ def cgmacros_raw_bio():
             errors="coerce"
         )
 
-    marker = st.selectbox(
-        "Select Biomarker",
-        biomarkers
-    )
+    marker = st.selectbox("Select Biomarker", biomarkers)
 
     bio = bio.dropna(subset=[marker])
 
@@ -137,8 +129,25 @@ def cgmacros_raw_bio():
         st.pyplot(fig2)
 
 def ares_actigraphy_ME():
-    df = pd.read_csv(ANALYZED_PATH / "ares-actigraphy-mixedeffects.csv")
-    return 0
+    st.header("ARES Bed Rest")
+    # Dropdown time
+    datasets = {"Actigraphy Mixed Effects" : "ares-actigraphy-mixedeffects.csv"}
+    selected = st.selectbox("Select Model", list(datasets.keys()))
+    df = pd.read_csv(ANALYZED_PATH / datasets[selected])
+    st.subheader("Model COE")
+    st.dataframe(df, use_container_width=True) # Take up entire width of page
+    # Attempt at Forest GGDM
+    st.subheader("COE estimates")
+    plot_df = df[~df["term"].str.contains("Group Var", na=False)]
+    st.scatter_chart(data=plot_df, x="COE", y="term")
+    # Sig Terms
+    st.subheader("Sig Fx")
+    sig = df[df["p_value"] < 0.05]
+    st.dataframe(sig, use_container_width=True)
+    #Interpret
+
+    
 
 cgmacros_timeseries_plot()
 cgmacros_raw_bio()
+ares_actigraphy_ME()

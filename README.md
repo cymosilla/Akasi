@@ -8,7 +8,11 @@ The purpose is to showcase a variety of methods, both data modeling and analyses
 Python 3.14
 Pandas
 Pathlib
+Plotly
+Numpy
+Matplotlib
 Streamlit 
+statsmodels
 
 For installing them, I utilized Anaconda, created a new conda environment "Akasi", and ran the commands in the next section from there. 
 

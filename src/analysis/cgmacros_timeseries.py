@@ -17,7 +17,6 @@ ROOT = (
     / "CGMacros_dateshifted365"
     / "CGMacros"
 )
-BIO_PATH = ROOT / "bio.csv"
 PREPROCESS_PATH = PROJECT_ROOT / "data" / "analyzed"
 
 PARTICIPANTS = list(range(1, 46)) # All participants
@@ -49,7 +48,7 @@ def timeseries(ts, prefix):
     }
 
 def main():
-    bio = pd.read_csv(BIO_PATH)
+    bio = pd.read_csv(ROOT / "bio.csv")
 
     # Keep lowercase naming convention
     bio = bio.rename(columns={
