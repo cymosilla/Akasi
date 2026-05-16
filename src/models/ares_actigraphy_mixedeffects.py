@@ -43,6 +43,8 @@ MAIN_FILE = ( DATA_DIR / "BRSMACT_Campagin_1_Actigraphy.csv" )
 
 QUERY_FILE = ( DATA_DIR / "BRSMACT_Campagin_1_Actigraphy_Query_Result.csv" )
 
+ANALYSIS_DIR = (PROJECT_ROOT / "data" / "analyzed")
+
 # Some of this code was templated from an earlier project I did for preprocessing.
 
 def parse_sleep_time(x):
@@ -133,13 +135,25 @@ def main():
     df = clean_data(df)
 
     print("\nSubjects:")
+    print(df["Subject"].value_counts())
+    results = fit_sleep_efficiency_model(df)
+    coef_table = pd.DataFrame(
+        {
+            "coefficient": results.params,
+            "std_error": results.bse,
+            "z_value": results.tvalues,
+            "p_value": results.pvalues,
+            "ci_lower": results.conf_int()[0],
+            "ci_upper": results.conf_int()[1],
+        }
+    )
+    coef_table.index.name = "term"
+    output_file = (ANALYSIS_DIR / "ares-actigraphy-mixedeffects.csv" )
+    coef_table.to_csv(output_file)
     print(
-        df["Subject"]
-        .value_counts()
+        f"Saved model results to:\n{output_file}"
     )
-    results = (
-        fit_sleep_efficiency_model(df)
-    )
+
     print("\n")
     print(results.summary())
 

@@ -25,6 +25,12 @@ st.title("Akasi Dashboard")
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
+ANALYZED_PATH = (
+    PROJECT_ROOT
+    / "data"
+    / "analyzed"
+)
+
 CGMACROS_ROOT = (
     PROJECT_ROOT
     / "data"
@@ -34,16 +40,18 @@ CGMACROS_ROOT = (
     / "CGMacros"
 )
 
-CGMACROS_ANALYZED_PATH = (
+ARES_ACTIGRAPHY_ROOT = (
     PROJECT_ROOT
     / "data"
-    / "analyzed"
-    / "cgmacros-time-series-res.csv"
+    / "raw"
+    / "UTM-1-3Campaign"
+    / "BRSMACT_Campaign_1_Actigraphy"
+    / "BRSMACT_Campaign_1_Actigraphy"
 )
 
 # Takes cgmacros-time-series-res.csv
 def cgmacros_timeseries_plot():
-    df = pd.read_csv(CGMACROS_ANALYZED_PATH)
+    df = pd.read_csv(ANALYZED_PATH / "cgmacros-time-series-res.csv")
     st.title("CGM Physiological Analysis")
     fig, ax = plt.subplots()
 
@@ -127,5 +135,10 @@ def cgmacros_raw_bio():
     # Add HDL 
 
         st.pyplot(fig2)
+
+def ares_actigraphy_ME():
+    df = pd.read_csv(ANALYZED_PATH / "ares-actigraphy-mixedeffects.csv")
+    return 0
+
 cgmacros_timeseries_plot()
 cgmacros_raw_bio()
