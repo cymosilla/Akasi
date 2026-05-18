@@ -7,6 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from src.analysis.cgmacros_scatter_plot import get_bio_data
+from analysis.cgmacros_timeseries import prepare_timeseries_data
+
 '''
     This is for the Streamlit visual app for users to be able to interact with the data. 
     List of variables:
@@ -139,6 +141,10 @@ def ares_actigraphy_ME():
     #Interpret
     st.subheader("Interpretation")
 
+def cgmacros_timeseries_per():
+    participant = st.selectbox("Participant",range(1, 50))
+    data = prepare_timeseries_data(participant)
+    #glucose up next
 cgmacros_summary_plot()
 cgmacros_raw_bio()
 ares_actigraphy_ME()
