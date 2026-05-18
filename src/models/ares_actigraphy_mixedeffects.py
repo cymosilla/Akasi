@@ -25,7 +25,7 @@ Question to answer: Sleep efficiency, what's eaffected by it?
 from pathlib import Path
 
 import pandas as pd
-import seaborn as sns # GLMM https://github.com/junpenglao/GLMM-in-Python/blob/master/Playground.py 
+# import seaborn as sns # GLMM https://github.com/junpenglao/GLMM-in-Python/blob/master/Playground.py 
 import statsmodels.formula.api as smf # Extension to scipy
 # Documentation: https://www.statsmodels.org/stable/example_formulas.html
 
@@ -147,6 +147,7 @@ def main():
     coef_table.index.name = "term"
     output_file = (ANALYSIS_DIR / "ares-actigraphy-mixedeffects.csv" )
     coef_table.to_csv(output_file)
+    print(f"Saved: {output_file}")
 
     # print("/n" + results.summary())
 

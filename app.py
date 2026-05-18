@@ -45,9 +45,13 @@ ARES_ACTIGRAPHY_ROOT = (
 )
 
 # Takes cgmacros-time-series-res.csv
-def cgmacros_timeseries_plot():
+def cgmacros_summary_plot():
     df = pd.read_csv(ANALYZED_PATH / "cgmacros-time-series-res.csv")
     st.title("CGM Physiological Analysis")
+
+
+
+    
     fig, ax = plt.subplots()
 
     ax.hist(df["Libre_mean"].dropna(), bins=15)
@@ -62,7 +66,6 @@ def cgmacros_timeseries_plot():
 
 # Takes bio.csv, time series would not work here
 def cgmacros_raw_bio():
-
     st.subheader("CGMacros Bio Data")
     # XXX: Remember to write desc here about why this is impt
     bio = get_bio_data()
@@ -73,60 +76,49 @@ def cgmacros_raw_bio():
         "Triglycerides",
         "Insulin"
     ]
-
     for col in biomarkers:
-        bio[col] = pd.to_numeric(
-            bio[col],
-            errors="coerce"
-        )
+        bio[col] = pd.to_numeric(bio[col], errors="coerce")
 
     marker = st.selectbox("Select Biomarker", biomarkers)
 
     bio = bio.dropna(subset=[marker])
 
-    # Huge plot (to prove a point)
     st.markdown(f"### {marker} by Subject")
 
-    fig, ax = plt.subplots(figsize=(8, 4))
-
-    ax.scatter(
-        bio["subject"],
-        bio[marker]
+    fig = px.scatter(
+        bio,
+        x="subject",
+        y=marker,
+        hover_data=bio.columns,
+        title=f"{marker} by Subject"
     )
+    st.plotly_chart(fig, use_container_width=True)
 
-    ax.set_xlabel("Subject")
-    ax.set_ylabel(marker)
-
-    st.pyplot(fig)
-
-    # Subplots
     st.markdown("### Biomarker Relationships")
 
-    col1, col2 = st.columns(2)
+    x_var = st.selectbox(
+        "Compare Against",
+        [
+            "Age",
+            "BMI",
+            "HDL",
+            "Cholesterol",
+            "Triglycerides",
+            "Insulin"
+        ],
+        index=0
+    )
+    # Implementing px properly over matplotlib
+    rel_df = bio.dropna(subset=[x_var, marker])
 
-    with col1:
-        fig1, ax1 = plt.subplots(figsize=(5, 4))
-        ax1.scatter(
-            bio["Age"],
-            bio[marker]
-        )
-        ax1.set_title(f"Age vs {marker}")
-        ax1.set_xlabel("Age")
-        ax1.set_ylabel(marker)
-        st.pyplot(fig1)
+    fig2 = px.scatter(rel_df,x=x_var,y=marker, hover_data=["subject"], trendline="ols",title=f"{x_var} vs {marker}")
+    st.plotly_chart(fig2,use_container_width=True)
+    st.markdown(f"### Distribution of {marker}")
 
-    with col2:
-        fig2, ax2 = plt.subplots(figsize=(5, 4))
-        ax2.scatter(
-            bio["BMI"],
-            bio[marker]
-        )
-        ax2.set_title(f"BMI vs {marker}")
-        ax2.set_xlabel("BMI")
-        ax2.set_ylabel(marker)
-    # Add HDL 
-
-        st.pyplot(fig2)
+    fig3 = px.histogram(bio,x=marker,nbins=20,title=f"{marker} Distribution")
+    st.plotly_chart(fig3,use_container_width=True)
+    st.markdown("### Summary Statistics")
+    st.dataframe(bio[[marker]].describe().T,use_container_width=True)
 
 def ares_actigraphy_ME():
     st.header("ARES Bed Rest")
@@ -139,15 +131,14 @@ def ares_actigraphy_ME():
     # Attempt at Forest GGDM
     st.subheader("COE estimates")
     plot_df = df[~df["term"].str.contains("Group Var", na=False)]
-    st.scatter_chart(data=plot_df, x="COE", y="term")
+    st.scatter_chart(data=plot_df, x="coefficient", y="term")
     # Sig Terms
     st.subheader("Sig Fx")
     sig = df[df["p_value"] < 0.05]
     st.dataframe(sig, use_container_width=True)
     #Interpret
+    st.subheader("Interpretation")
 
-    
-
-cgmacros_timeseries_plot()
+cgmacros_summary_plot()
 cgmacros_raw_bio()
 ares_actigraphy_ME()
