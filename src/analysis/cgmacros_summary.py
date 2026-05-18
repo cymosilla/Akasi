@@ -118,7 +118,7 @@ def main():
         feature_rows.append(feats)
 
     feat_df = pd.DataFrame(feature_rows)
-    out = PREPROCESS_PATH / "cgmacros-time-series-res.csv"
+    out = PREPROCESS_PATH / "cgmacros-summary-res.csv"
     feat_df.to_csv(out, index=False)
     print(f"Saved: {out}  shape={feat_df.shape}")
 

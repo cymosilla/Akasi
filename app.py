@@ -46,23 +46,23 @@ ARES_ACTIGRAPHY_ROOT = (
 
 # Takes cgmacros-time-series-res.csv
 def cgmacros_summary_plot():
-    df = pd.read_csv(ANALYZED_PATH / "cgmacros-time-series-res.csv")
+    df = pd.read_csv(ANALYZED_PATH / "cgmacros-summary-res.csv")
     st.title("CGM Physiological Analysis")
+    metric = st.selectbox(
+        "Select Metric",
+        [
+            "Libre_mean",
+            "Dexcom_mean",
+        ]
+    )
+    df[metric] = pd.to_numeric(df[metric], errors="coerce")
+    fig = px.histogram(df,x=metric, nbins=20, marginal="box",title=f"Distribution of {metric}")
 
-
-
-    
-    fig, ax = plt.subplots()
-
-    ax.hist(df["Libre_mean"].dropna(), bins=15)
-
-    ax.set_xlabel("Mean Glucose")
-    ax.set_ylabel("Subjects")
-
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.pyplot(fig)
-    st.write(df.head())
+    st.plotly_chart(fig,use_container_width=True)
+    if "subject" in df.columns:
+        fig2 = px.scatter(df,x="subject", y=metric,hover_data=df.columns,title=f"{metric} by Subject")
+        st.plotly_chart(fig2,use_container_width=True)
+    st.dataframe(df,use_container_width=True)
 
 # Takes bio.csv, time series would not work here
 def cgmacros_raw_bio():
@@ -78,24 +78,24 @@ def cgmacros_raw_bio():
     ]
     for col in biomarkers:
         bio[col] = pd.to_numeric(bio[col], errors="coerce")
-
     marker = st.selectbox("Select Biomarker", biomarkers)
-
     bio = bio.dropna(subset=[marker])
-
     st.markdown(f"### {marker} by Subject")
-
     fig = px.scatter(
         bio,
         x="subject",
         y=marker,
         hover_data=bio.columns,
-        title=f"{marker} by Subject"
+        title=f"{marker} by Subject",
+        color_discrete_sequence=px.colors.qualitative.Set2,
     )
-    st.plotly_chart(fig, use_container_width=True)
-
+    # col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2 = st.columns(2)
+    with col2:
+        st.plotly_chart(fig, use_container_width=True)
+    with col1:
+        st.markdown("### Interpretation test")
     st.markdown("### Biomarker Relationships")
-
     x_var = st.selectbox(
         "Compare Against",
         [
