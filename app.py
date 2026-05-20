@@ -1,6 +1,7 @@
 from pathlib import Path
 import pandas as pd
 import plotly.express as px # New interactive chart, see how it goes
+import plotly.graph_objects as go
 # import plotly.graph_objects as go # No go
 import streamlit as st
 import numpy as np
@@ -145,6 +146,27 @@ def cgmacros_timeseries_per():
     participant = st.selectbox("Participant",range(1, 50))
     data = prepare_timeseries_data(participant)
     #glucose up next
+    fig = go.Figure()
+    # Libre
+    fig.add_trace(
+        go.Scatter(
+            x=data["glucose"]["Timestamp"],
+            y=data["glucose"]["Libre GL"],name="Libre"
+        )
+    )
+    # Dexcom
+    fig.add_trace(
+        go.Scatter(x=data["glucose"]["Timestamp"],y=data["glucose"]["Dexcom GL"],
+            name="Dexcom"
+        )
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Heart rate
+    # Activity (MET)
+    # Add different colors for meals somehow
+
+st.plotly_chart(fig, use_container_width=True)
 cgmacros_summary_plot()
 cgmacros_raw_bio()
 ares_actigraphy_ME()
