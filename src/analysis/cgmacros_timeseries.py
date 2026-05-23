@@ -24,6 +24,8 @@ def get_subjects(age_range = None, genders=None,):
 
     return sorted(bio["subject"].astype(int).tolist())
 
+# def load_bio():
+
 # For every individual in the study, there will be a graph
 def load_subject(subject: int) -> pd.DataFrame:
     folder = ROOT / f"CGMacros-{subject:03d}"
@@ -48,16 +50,36 @@ def extract_meals(df: pd.DataFrame) -> pd.DataFrame:
         .sort_values("Timestamp")
     )
 
+# From start to end, for Streamlit's slider system
 def date_filter(df: pd.DataFrame, start_date, end_date,):
-     return 0
+    mask = (df["Timestamp"].dt.date >= start_date) & (df["Timestamp"].dt.date <= end_date)
+    return df.loc[mask].copy()
 
-def prepare_timeseries_data(subject: int) -> dict:
+# def prepare_timeseries_data(subject: int) -> dict: # Dictionary may not work for timestamps
+def prepare_timeseries_data(subject: int, start_date=None, end_date=None):
     df = load_subject(subject)
+    if (start_date is not None and end_date is not None):
+        df = date_filter(df,start_date, end_date,)
     meals = extract_meals(df)
     return {
         "glucose": df[["Timestamp", "Libre GL", "Dexcom GL"]].copy(),
         "heart_rate": df[["Timestamp", "HR"]].copy(),
         "activity": df[["Timestamp", "METs", "Calories (Activity)"]].copy(),
+        "meals": meals[
+            [
+                "Timestamp",
+                "Meal Type",
+                "Calories",
+                "Carbs",
+                "Protein",
+                "Fat",
+                "Fiber",
+            ]
+        ].copy(),
+
+        "heart_rate": df[["Timestamp","HR",]].copy(),
+        "activity": df[["Timestamp","METs", "Calories (Activity)",]].copy(),
+
         "meals": meals[
             [
                 "Timestamp",
