@@ -11,10 +11,9 @@ ROOT = (
     / "CGMacros_dateshifted365"
     / "CGMacros"
 )
-
 # Filtration start
 def get_subjects(age_range = None, genders=None,):
-    bio = pd.read_csv(ROOT)
+    bio = pd.read_csv(ROOT / "bio.csv")
     if age_range is not None:
         bio = bio[
             bio["Age"].between(age_range[0],age_range[1])]

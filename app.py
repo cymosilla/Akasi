@@ -31,7 +31,8 @@ ANALYZED_PATH = (
 CGMACROS_ROOT = (
     PROJECT_ROOT
     / "data"
-    / "sample"
+    / "raw"
+    / "PhysioNet"
     / "cgmacros-scientific-dataset-nutrition-diet-monitoring-1.0.0"
     / "cgmacros-scientific-dataset-nutrition-diet-monitoring-1.0.0"
     / "CGMacros_dateshifted365"
@@ -142,6 +143,18 @@ def ares_actigraphy_ME():
     #Interpret
     st.subheader("Interpretation")
 
+# Spent like 30 minutes on PATH
+def test():
+    bio = pd.read_csv(CGMACROS_ROOT / "bio.csv")
+    bio.columns = bio.columns.str.strip()
+    print(bio.columns.tolist())
+#     print("\n\n\n\n\nNEW")
+#     print(CGMACROS_ROOT / "bio.csv")
+#     p = CGMACROS_ROOT / "bio.csv"
+#     print("bio csv path:", p)
+#     print("exists:", p.exists())
+#     print("is_file:", p.is_file())
+
 def cgmacros_timeseries_per():
     bio = pd.read_csv(CGMACROS_ROOT / "bio.csv")
     st.sidebar.header("Filters")
@@ -159,8 +172,8 @@ def cgmacros_timeseries_per():
     subjects = get_subjects(age_range=age_range, genders=selected_genders)
     # subject = st.selectbox("Subject",range(1, 50))
     subject = st.sidebar.selectbox("Subject", subjects)
-
-    subject_info = bio[bio["Subject"] == subject].iloc[0]
+    # Remove .astype if figured out
+    subject_info = bio[bio["subject"].astype(str) == str(subject)].iloc[0]    
     st.subheader(f"Subject {subject:03d}")
 
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -171,34 +184,65 @@ def cgmacros_timeseries_per():
     col4.metric("Weight",subject_info["Body weight"])
     col5.metric("Height",subject_info["Height"])
 
+    full_data = prepare_timeseries_data(subject)
+    timestamps = full_data["glucose"]["Timestamp"]
+    min_date = timestamps.min().date()
+    max_date = timestamps.max().date()
+    st.subheader("Date Range")
+    date_range = st.date_input(
+        "Select Date Range",
+        value=(min_date, max_date),
+    )
 
+    if len(date_range) == 2:
+        start_date, end_date = date_range
+    else:
+        start_date = min_date
+        end_date = max_date
 
-    # data = prepare_timeseries_data(participant)
+    data = prepare_timeseries_data(subject, start_date=start_date, end_date=end_date)
+
+    # Meals
+    meal_colors = {
+        "Breakfast": "orange",
+        "Lunch": "green",
+        "Dinner": "blue",
+        "Snacks": "white",
+    }
     #glucose up next
-    fig = go.Figure()
+    glucose_fig = go.Figure()
     # Libre
-    fig.add_trace(
+    glucose_fig.add_trace(
         go.Scatter(
             x=data["glucose"]["Timestamp"],
             y=data["glucose"]["Libre GL"],
-            name="Libre"
+            mode="lines",name="Libre GL"
         )
     )
     # Dexcom
-    fig.add_trace(
+    glucose_fig.add_trace(
         go.Scatter(x=data["glucose"]["Timestamp"],
                    y=data["glucose"]["Dexcom GL"],
-                   name="Dexcom"
+                   mode="lines", name="Dexcom GL"
         )
     )
-    st.plotly_chart(fig, use_container_width=True)
+
+    for _, meal in data["meals"].iterrows():
+        glucose_fig.add_vline( # Verifical lines on plot
+            x= meal["Timestamp"],
+            line_color=meal_colors.get(meal["Meal Type"],"gray"),
+            opacity=0.25, # XXX: Comment out, gray might be too light
+        )
+    glucose_fig.update_layout(
+        title="Glucose Timeline", xaxis_title="Time", yaxis_title="Glucose", height=500)
+    
+    st.plotly_chart(glucose_fig, use_container_width=True)
 
 
     # Heart rate
     # Activity (MET)
     # Add different colors for meals somehow
-
-st.plotly_chart(fig, use_container_width=True)
-cgmacros_summary_plot()
-cgmacros_raw_bio()
-ares_actigraphy_ME()
+# cgmacros_summary_plot()
+# cgmacros_raw_bio()
+# ares_actigraphy_ME()
+cgmacros_timeseries_per()
