@@ -151,13 +151,15 @@ def cgmacros_timeseries_per():
     fig.add_trace(
         go.Scatter(
             x=data["glucose"]["Timestamp"],
-            y=data["glucose"]["Libre GL"],name="Libre"
+            y=data["glucose"]["Libre GL"],
+            name="Libre"
         )
     )
     # Dexcom
     fig.add_trace(
-        go.Scatter(x=data["glucose"]["Timestamp"],y=data["glucose"]["Dexcom GL"],
-            name="Dexcom"
+        go.Scatter(x=data["glucose"]["Timestamp"],
+                   y=data["glucose"]["Dexcom GL"],
+                   name="Dexcom"
         )
     )
     st.plotly_chart(fig, use_container_width=True)
