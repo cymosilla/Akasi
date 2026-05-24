@@ -27,10 +27,30 @@ CGMACROS_ROOT = (
     / "CGMacros"
 )
 st.title("CGMacros: Healthy Diet")
+st.header("What is CGMacros?")
+st.markdown(
+    '''
+    CGMacros is a multimodal dataset for macronutrient data, complete with gut microbiome profiles, meals and their images, as well as cholesterol & triglyceride levels.
+    Over the course of 10 consecutive days, 45 participants were tracked via the Dexcom G6 Pro (sampling rate every 5 minutes) & Abbott FreeStyle Libre Pro (sampling rate every 15 minutes) glucose monitors.
+    The Libre Pro was placed on the upper arm while Dexcom was placed on the abdomen. 
+    Devices were not able to be seen by participants, so knowing their glucose levels was not a factor in their behaviors during the study.
+    '''
+)
 
+st.header("What can this do for Artemis II?")
+st.markdown(
+    '''
+A healthy balanced diet is necessary for astronauts, but there are limitations on the kinds of foods to bring.
+The lack of refrigeration, dangers of radiation, whirring mechanical systems all around, & a microgravity environment altogether create lots of requirements for food.
+Crumbles, salt & pepper, even carbonated beverages are not allowed in that they may become hazards flying all over the place in 0g. 
+With the limitations on food especially for immunocompromised people, keeping track of glucose, blood sugar, cholesterol, & gut microbiota are essential for astronauts.
+
+Out of 45 participants, 5 were chosen to represent as a sample for the Artemis II astronauts due to their ages & HbA1c < 5.7%, indicating no diabetes.
+6 (F), 10 (F), 11 (M), 15 (F), 33(M)
+'''
+)
 def cgmacros_summary_plot():
     df = pd.read_csv(ANALYZED_PATH / "cgmacros-summary-res.csv")
-    st.title("CGM Physiological Analysis")
     metric = st.selectbox(
         "Select Metric",
         [
@@ -218,3 +238,14 @@ def cgmacros_timeseries_per():
 cgmacros_summary_plot()
 cgmacros_raw_bio()
 cgmacros_timeseries_per()
+
+st.markdown(
+    '''
+Works Cited:
+Gutierrez-Osuna, R., Kerr, D., Mortazavi, B., & Das, A. (2025). CGMacros: a scientific dataset for personalized nutrition and diet monitoring (version 1.0.0). PhysioNet. RRID:SCR_007345. https://doi.org/10.13026/3z8q-x658
+
+Anurag Das , David Kerr , Namino Glanz , Wendy Bevier , Rony Santiago , Ricardo Gutierrez-Osuna, and Bobak Mortazavi, "CGMacros: a scientific dataset for personalized nutrition and diet monitoring," Scientific Data (under review)
+
+Goldberger, A., Amaral, L., Glass, L., Hausdorff, J., Ivanov, P. C., Mark, R., ... & Stanley, H. E. (2000). PhysioBank, PhysioToolkit, and PhysioNet: Components of a new research resource for complex physiologic signals. Circulation [Online]. 101 (23), pp. e215–e220. RRID:SCR_007345. 
+    '''
+)

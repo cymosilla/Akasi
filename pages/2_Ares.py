@@ -21,9 +21,28 @@ ARES_ACTIGRAPHY_ROOT = (
     / "BRSMACT_Campaign_1_Actigraphy"
     / "BRSMACT_Campaign_1_Actigraphy"
 )
+st.title("NASA Standard Measures Bed Rest Campaigns")    
+st.header("What does \"bed rest\" mean?")
 
+st.markdown(
+    '''
+    Getting paid to lay in bed all day may sound amazing. But this is no ordinary bed.
+    To simulate spaceflight effects without being in space, bed rest involves a 6-degree tilt towards the head.
+    This shows how fluids (blood, mucuous, earwax, lymphatic fluid, etc.) behave in a microgravity environment.
+    Due to the body's orientation, it creates a sense that there is a lack of gravity. But the body feels the effects.
+    Muscles start to atrophize, bones can become less dense, intracranial pressure can increase, peristalsis can also be affected. 
+    '''
+)
+
+st.header("What can this do for Artemis II?")
+st.markdown(
+    '''
+    Outside of the microgravity effects, my intention of selecting this one next was to try & relate peristalsis data from CGMacros with bed resting & differentiate glucose levels & heart rhythms.
+    The bed rest studies are abundant with data, but there is a lack of documentation on how to read some of the files.
+    
+'''
+)
 def ares_actigraphy_ME():
-    st.header("ARES Bed Rest")
     # Dropdown time
     datasets = {"Actigraphy Mixed Effects" : "ares-actigraphy-mixedeffects.csv"}
     selected = st.selectbox("Select Model", list(datasets.keys()))
