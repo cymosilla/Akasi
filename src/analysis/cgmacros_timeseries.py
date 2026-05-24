@@ -39,7 +39,7 @@ def load_subject(subject: int) -> pd.DataFrame:
         df = df.drop(columns=["Image path"])
 
     df["Timestamp"] = pd.to_datetime(df["Timestamp"])
-    return df.sort_values("Timestamp".reset_index(drop=True))
+    return df.sort_values("Timestamp").reset_index(drop=True)
 
 # Meals-only
 def extract_meals(df: pd.DataFrame) -> pd.DataFrame:
