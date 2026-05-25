@@ -23,7 +23,7 @@ Question to answer: Sleep efficiency, what's eaffected by it?
 """
 
 from pathlib import Path
-
+import numpy as np
 import pandas as pd
 # import seaborn as sns # GLMM https://github.com/junpenglao/GLMM-in-Python/blob/master/Playground.py 
 import statsmodels.formula.api as smf # Extension to scipy
@@ -63,17 +63,17 @@ def parse_sleep_time(x):
         return int(hrs) + int(mins) / 60 
     return float(s)
 
-# This dataset was created in 2002, but due to an error, it was marked as 2004 (according to the readme).
-def force_year_2002(series):
-    dates = pd.to_datetime(series, errors="coerce")
-    mask = dates.notna()
-    dates.loc[mask] = (
-        dates.loc[mask]
-        .apply(
-            lambda d: d.replace(year=2002)
-        )
-    )
-    return dates
+# # This dataset was created in 2002, but due to an error, it was marked as 2004 (according to the readme).
+# def force_year_2002(series):
+#     dates = pd.to_datetime(series, errors="coerce")
+#     mask = dates.notna()
+#     dates.loc[mask] = (
+#         dates.loc[mask]
+#         .apply(
+#             lambda d: d.replace(year=2002)
+#         )
+#     )
+#     return dates
 
 def load_data():
     frames = []
@@ -86,14 +86,16 @@ def load_data():
     # print(
     #     f"Loaded rows: {len(df)}"
     # )
-    return df
+    return pd.concat(frames,ignore_index=True)
 
+# This was separated primarily because I misinterpreted that ALL bed rest studies were conducted in 2002.
+# However, force_year_2002 is no longer necessary.
 def clean_data(df):
     df = df.copy()
     df.columns = df.columns.str.strip().str.replace(" ", "_")
     # print("\nColumns:") # XXX: Remove before submission
     # print(df.columns.tolist())
-    df["Date"] = force_year_2002(df["Date"])
+    df["Date"] = pd.to_numeric(df["Date"], errors="coerce")
     df["sleep_latency_hr"] = df["Sleep_latency"].apply(parse_sleep_time)
     df["sleep_duration_hr"] = df["Sleep_duration"].apply(parse_sleep_time)
     df["sleep_efficiency"] = pd.to_numeric(df["Sleep_efficiency"], errors="coerce")
@@ -127,12 +129,12 @@ def fit_sleep_efficiency_model(df):
     )
     return results
 
-def main():
+def mixed_effects():
     df = load_data()
     df = clean_data(df)
-
-    print("\nSubjects:")
-    print(df["Subject"].value_counts())
+    df.to_csv(ANALYSIS_DIR / "ares-actigraphy-clean.csv", index=False)
+    # print("\nSubjects:")
+    # print(df["Subject"].value_counts())
     results = fit_sleep_efficiency_model(df)
     coef_table = pd.DataFrame(
         {
@@ -148,8 +150,14 @@ def main():
     output_file = (ANALYSIS_DIR / "ares-actigraphy-mixedeffects.csv" )
     coef_table.to_csv(output_file)
     print(f"Saved: {output_file}")
+    #print(sorted(df["BR_Day"].dropna().unique()))
+
+mixed_effects()
 
     # print("/n" + results.summary())
 
-if __name__ == "__main__":
-    main()
+# def test():
+#     print(sorted(df["BR_Day"].dropna().unique()))
+
+# if __name__ == "__main__":
+#     main()
