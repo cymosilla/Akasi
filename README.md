@@ -13,6 +13,9 @@ Numpy
 Matplotlib
 Streamlit 
 statsmodels
+scikit
+
+The point of all these dependencies was to learn more about their features & how they differ. 
 
 For installing them, I utilized Anaconda, created a new conda environment "Akasi", and ran the commands in the next section from there. 
 
