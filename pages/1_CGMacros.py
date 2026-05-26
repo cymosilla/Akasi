@@ -5,10 +5,14 @@ import plotly.graph_objects as go
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.analysis.cgmacros_scatter_plot import get_bio_data
 from src.analysis.cgmacros_timeseries import get_subjects, prepare_timeseries_data
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 ANALYZED_PATH = (
     PROJECT_ROOT
@@ -201,9 +205,7 @@ def cgmacros_timeseries_per():
             line_color=meal_colors.get(meal["Meal Type"],"gray"),
             opacity=0.25, # XXX: Comment out, gray might be too light
         )
-    glucose_fig.update_layout(
-        title="Glucose Timeline", xaxis_title="Time", yaxis_title="Glucose", height=500)
-    
+    glucose_fig.update_layout(title="Glucose Timeline", xaxis_title="Time", yaxis_title="Glucose", height=500)
     st.plotly_chart(glucose_fig, use_container_width=True)
 
     # Heart
