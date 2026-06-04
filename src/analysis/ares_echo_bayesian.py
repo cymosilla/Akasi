@@ -37,18 +37,17 @@ def load_cf_avg():
     return df
 
 
-def fit_bayesian_metric(
-    metric_code: str,
-):
+def fit_bayesian_metric(metric_code: str):
 
     df = load_cf_avg()
-
     metric_df = df[df["Test"] == metric_code].copy().dropna(subset=["BR_Day","Recorded_Value",])
-
     X = metric_df[["BR_Day"]].values
-
     y = metric_df["Recorded_Value"].values
 
+    # Never used this before, but I hope this goes well
+    # class sklearn.linear_model.BayesianRidge(*, max_iter=300, tol=0.001, alpha_1=1e-06, 
+    # alpha_2=1e-06, lambda_1=1e-06, lambda_2=1e-06, alpha_init=None, lambda_init=None, 
+    # compute_score=False, fit_intercept=True, copy_X=True, verbose=False)
     model = BayesianRidge()
    
     # Dev error by 3, due to accidental deletion of data. Reverted 
@@ -69,4 +68,14 @@ def fit_bayesian_metric(
     metric_df["Lower_95"] = y_pred - 1.96 * y_std
     metric_df["Upper_95"] = y_pred + 1.96 * y_std
 
-    return 0
+    return {
+        "data": metric_df,
+        "model": model,
+        "slope": model.coef_[0],
+        "intercept": model.intercept_,
+        "alpha": model.alpha_,
+        "lambda": model.lambda_,
+        "metric_info": PRIMARY_METRICS[
+            metric_code
+        ],
+    }

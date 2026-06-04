@@ -13,9 +13,9 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.analysis.ares_echo_long_analysis import (
     load_cf_avg,
-    get_primary_metric_labels,
+    get_PRIMARYl,
     filter_metric,
-    compute_summary,
+    long_sum,
     PRIMARY_METRICS,
 )
 from src.analysis.ares_echo_bayesian import (
@@ -177,15 +177,124 @@ def ares_actigraphy_ME():
     st.subheader("Medication Effect")
     plot_medication_effect(actigraphy_df)
 
+def ares_long_CF():
+
+    st.header("Ares Echocardiography Longitudinal Analysis")
+
+    st.markdown(
+        """
+        Focused cardiovascular metrics most relevant
+        to long-duration bed-rest and spaceflight
+        adaptation.
+        """
+    )
+
+    df = load_cf_avg()
+
+    metric_labels = get_PRIMARYl()
+
+    selected_metric = st.selectbox(
+        "Select Cardiac Measurement",
+        options=list(metric_labels.keys()),
+        format_func=lambda x:metric_labels[x],
+    )
+    # st.write(selected_metric)
+    # st.write(type(selected_metric))
+
+    metric_info = PRIMARY_METRICS.get(selected_metric)
+
+    metric_df = filter_metric(df,selected_metric)
+
+    fig = px.line(
+        metric_df,
+        x="BR_Day",
+        y="Recorded_Value",
+        color="Subject",
+        markers=True,
+        hover_data=["Date","Test_Phase"],
+        title=metric_info["name"],
+    )
+
+    fig.update_layout(
+        xaxis_title="Bed Rest Day",
+        yaxis_title=(
+            f"{metric_info['name']} "
+            f"({metric_info['unit']})"
+        ),
+        legend_title="Subject",
+    )
+
+    st.plotly_chart(fig,use_container_width=True)
+
+    st.subheader("Subject Summary")
+    summary_df = long_sum(metric_df)
+    st.dataframe(summary_df,use_container_width=True)
+    with st.expander("View Raw Data"):
+        st.dataframe(metric_df,use_container_width=True)
 
 def test():
     df = load_cf_avg()
     print(df["Test"].sort_values().unique())
 
+
+
+def ares_echo_bayesian():
+    st.header("Bayesian Echocardiography Analysis")
+    selected_metric = st.selectbox(
+        "Metric",
+        list(PRIMARY_METRICS.keys()),
+        format_func=lambda x:f"{PRIMARY_METRICS[x]['name']} "
+        f"({PRIMARY_METRICS[x]['unit']})"
+    )
+
+    results = fit_bayesian_metric(selected_metric)
+    metric_df = results["data"]
+    metric_info = results["metric_info"]
+
+    st.metric("Posterior Mean Slope",round(results["slope"], 4))
+
+    st.metric("Posterior Mean Intercept",round(results["intercept"],4 ))
+
+    fig = px.scatter(
+        metric_df,
+        x="BR_Day",
+        y="Recorded_Value",
+        color="Subject",
+        title=(f"{metric_info['name']} "
+            f"Bayesian Regression"
+        ),
+    )
+
+    # https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html 
+    fig.add_scatter(
+        x=metric_df["BR_Day"],
+        y=metric_df["Prediction"],
+        mode="lines",
+        name="Posterior Mean",
+    )
+
+    fig.add_scatter(
+        x=metric_df["BR_Day"],
+        y=metric_df["Upper_95"],
+        mode="lines",
+        name="Upper 95%",
+    )
+
+    fig.add_scatter(
+        x=metric_df["BR_Day"],
+        y=metric_df["Lower_95"],
+        mode="lines",
+        name="Lower 95%",
+    )
+    # use_container_widdth deprecated, change later
+    st.plotly_chart(fig,use_container_width=True)
+    st.dataframe(metric_df,se_container_width=True,)
+    
 def ares():
     # Dropdown time
     methods = {"Actigraphy Mixed Effects": ares_actigraphy_ME,
-               # Add other methods here
+               "Echocardiography Longitudinal (CF)": ares_long_CF,
+                "Bayesian Echocardiography": ares_echo_bayesian,
                }
 
     selected = st.selectbox("Select Analysis",list(methods.keys()))
