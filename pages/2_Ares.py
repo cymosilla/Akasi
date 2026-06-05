@@ -288,7 +288,7 @@ def ares_echo_bayesian():
     )
     # use_container_widdth deprecated, change later
     st.plotly_chart(fig,use_container_width=True)
-    st.dataframe(metric_df,se_container_width=True,)
+    st.dataframe(metric_df,use_container_width=True,)
     
 def ares():
     # Dropdown time
