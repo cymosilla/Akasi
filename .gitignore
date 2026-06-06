@@ -1,7 +1,5 @@
 __pycache__/
 compressed/
-data/raw
-data/preprocessed
 docs/
 compressed.zip
 example_app.py
