@@ -121,13 +121,7 @@ def plot_eepy_traj(df):
 
 
 def plot_eepy_effmean(df):
-
-    summary = (
-        df.groupby("BR_Day")["sleep_efficiency"]
-        .mean()
-        .reset_index(name="mean")
-    )
-
+    summary = (df.groupby("BR_Day")["sleep_efficiency"].mean().reset_index(name="mean"))
     fig = px.line(
         summary,
         x="BR_Day",
