@@ -1,5 +1,5 @@
 # Akasi for Artemis II
-NASA HRP Data Challenge for displaying Artemis II crew's health data
+
 
 ## About
 The purpose is to showcase a variety of methods, both data modeling and analyses, for the upcoming Artemis II crew health data. This is a showcase on quantity and the corresponding components included in the submission delineate how these methods can be interchangeable between the selected proxy datasets.
