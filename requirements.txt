@@ -1,0 +1,10 @@
+python==3.14.4
+pandas
+matplotlib
+pathlib
+pyarrow
+notebook
+streamlit
+statsmodels
+plotly
+scikit-learn

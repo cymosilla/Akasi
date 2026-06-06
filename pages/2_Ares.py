@@ -85,35 +85,70 @@ def plot_eepy_traj(df):
     st.write(df.groupby("Subject")["sleep_efficiency"].agg(["count", "min", "max"]))
 
 # Sleep mean
+# def plot_eepy_effmean(df):
+
+#     summary = df.groupby("BR_Day")["sleep_efficiency"].agg(mean="mean",std="std",count="count").reset_index()
+
+#     summary["se"] = summary["std"]/np.sqrt(summary["count"])
+#     summary["lower"] = summary["mean"] -1.96 * summary["se"]
+#     summary["upper"] = summary["mean"]+  1.96 * summary["se"]
+
+#     fig = go.Figure()
+
+#     fig.add_trace(
+#         go.Scatter(
+#             x=summary["BR_Day"],
+#             y=summary["upper"],
+#             mode="lines",
+#             line=dict(width=0),
+#             showlegend=False,
+#         )
+#     )
+
+#     fig.update_layout(
+#         title="Average Sleep Efficiency Across Bed Rest",
+#         xaxis_title="Bed Rest Day",
+#         yaxis_title="Sleep Efficiency (%)",
+#         height=600,
+#     )
+
+#     st.write(summary)
+#     st.write(summary[["mean", "lower", "upper"]].isna().sum())
+#     st.write("plot running")
+#     st.write(summary.head())
+#     st.write(summary.shape)
+#     st.plotly_chart(fig,use_container_width=True)
+
+
 def plot_eepy_effmean(df):
 
-    summary = df.groupby("BR_Day")["sleep_efficiency"].agg(mean="mean",std="std",count="count").reset_index()
+    summary = (
+        df.groupby("BR_Day")["sleep_efficiency"]
+        .mean()
+        .reset_index(name="mean")
+    )
 
-    summary["se"] = summary["std"]/np.sqrt(summary["count"])
-    summary["lower"] = summary["mean"] -1.96 * summary["se"]
-    summary["upper"] = summary["mean"]+  1.96 * summary["se"]
+    fig = px.line(
+        summary,
+        x="BR_Day",
+        y="mean",
+        markers=True,
+        title="Average Sleep Efficiency Across Bed Rest as a %",
+    )
 
-    fig = go.Figure()
+    st.plotly_chart(
+        fig,
+        use_container_width=True,
+    )
 
-    fig.add_trace(
-        go.Scatter(
-            x=summary["BR_Day"],
-            y=summary["upper"],
-            mode="lines",
-            line=dict(width=0),
-            showlegend=False,
+    px.line(
+        df.groupby(["Test_Phase", "BR_Day"])["sleep_efficiency"]
+        .mean()
+        .reset_index(),
+        x="BR_Day",
+        y="sleep_efficiency",
+        color="Test_Phase",
         )
-    )
-
-    fig.update_layout(
-        title="Average Sleep Efficiency Across Bed Rest",
-        xaxis_title="Bed Rest Day",
-        yaxis_title="Sleep Efficiency (%)",
-        height=600,
-    )
-
-    st.plotly_chart(fig,use_container_width=True)
-
 
 # Efficiency based on phases
 def plot_eepy_effPhase(df):
